@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+
+
+
+<!-- <script src="pouchdb-7.0.0.js" charset="utf-8"></script> -->
+<script src="test/faker.js" charset="utf-8"></script>
+
+<script type="text/javascript">
+
+
+var db = new PouchDB('http://localhost:5984/maindb2');
+
+var myDoc = {
+//   _id:'983b8812-aa63-0094-5ca1-15900c74c6b2',
+_id: guidGenerator(),
+  firstName: 'FARES',
+  lastName: 'ABADOU',
+  age: 33,
+  male: true ,
+  credit:'1200',
+  doc : {
+    nif:'16484768468464',
+    nis:'656568564',
+    article:'5465658985',
+    reg:'1932165464',
+  } ,
+  parents :[{
+    name:'germat',
+    fname:'Djamila',
+  },
+  {
+    name:'ABADOU',
+    fname:'Moh',
+  }
+]
+};
+
+
+
+function addDoc(){
+  var n1 = performance.now() ,n2;
+db.put(myDoc,function(){
+  myDoc._id =  guidGenerator();
+  console.log(myDoc._id);
+   console.log(performance.now() - n1);
+});
+}
+
+
+
+function getDoc(){
+  db.query(function (doc, emit) {
+    emit(doc.firstName);
+  }, {firstName: "Velva"}).then(function (result) {
+    // found docs with name === 'foo'
+    console.log(result);
+  }).catch(function (err) {
+    // handle any errors
+  });
+}
+
+function removeDoc(){
+  db.get('983b8812-aa63-0094-5ca1-15900c74c6b2').then(function(doc) {
+  return db.remove(doc._id, doc._rev);
+}).then(function (result) {
+
+}).catch(function (err) {
+  console.log(err);
+});
+}
+
+function getALL(filter){
+  var n1 = performance.now() ,n2;
+  db.allDocs({
+  include_docs: true,
+  attachments: true
+}).then(function(doc){
+    // console.log(doc);
+      let list = doc.rows;
+      if (filter !== undefined) list = list.filter(filter);
+let malesNumber = list.filter(males) ,
+femalesNumber = list.filter(females) ;
+    console.log('total ',list.length);
+    console.log('males ',malesNumber.length);
+    console.log('females ',femalesNumber.length);
+    console.log(performance.now() - n1);
+  })
+}
+
+function males(x) {
+  return x.doc.male ;
+}
+
+function females(x) {
+  return (x.doc.male == false) ;
+}
+
+
+
+function addBulk(x) {
+
+for (var i = 0; i < x; i++) {
+let newDoc =  {
+  _id: guidGenerator(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    age: 33,
+    male: faker.random.boolean() ,
+    credit:faker.finance.amount(),
+    doc : {
+      nif:faker.finance.amount(),
+      nis:faker.finance.bitcoinAddress(),
+      article:'5465658985',
+      reg:'1932165464',
+    } ,
+    parents :[{
+      name:faker.name.firstName(),
+      fname:faker.name.lastName(),
+    },
+    {
+      name:'ABADOU',
+      fname:'Moh',
+    }
+  ]
+}
+
+  db.put(newDoc,function(){
+    // myDoc._id =  guidGenerator();
+    console.log(newDoc._id);
+
+  });
+
+
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function guidGenerator() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+
+</script>
+  </body>
+</html>
