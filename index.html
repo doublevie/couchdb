@@ -3,13 +3,94 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-  </head>
+<link rel="stylesheet" href="test/photon/css/photon.min.css">  </head>
   <body>
 
 
 
-<!-- <script src="pouchdb-7.0.0.js" charset="utf-8"></script> -->
+    <div class="window">
+
+         <!-- .toolbar-header sits at the top of your app -->
+         <header class="toolbar toolbar-header">
+           <h1 class="title">Photon</h1>
+         </header>
+
+         <!-- Your app's content goes inside .window-content -->
+         <div class="window-content">
+           <div class="pane-group">
+             <div class="pane pane-sm sidebar">
+               <nav class="nav-group">
+                 <h5 class="nav-group-title">Favorites</h5>
+                 <span class="nav-group-item">
+                   <span class="icon icon-home"></span>
+                   FirstName
+                 </span>
+                 <span class="nav-group-item active">
+                   <span class="icon icon-light-up"></span>
+                   lastName
+                 </span>
+                 <span class="nav-group-item">
+                   <span class="icon icon-download"></span>
+                   age
+                 </span>
+                 <span class="nav-group-item">
+                   <span class="icon icon-folder"></span>
+                   Documents
+                 </span>
+                 <span class="nav-group-item">
+                   <span class="icon icon-window"></span>
+                   Applications
+                 </span>
+                 <span class="nav-group-item">
+                   <span class="icon icon-signal"></span>
+                   AirDrop
+                 </span>
+                 <span class="nav-group-item">
+                   <span class="icon icon-monitor"></span>
+                   Desktop
+                 </span>
+               </nav>
+             </div>
+
+             <div class="pane">
+               <table class="table-striped">
+                 <thead>
+                   <tr>
+                     <th>FIrstName</th>
+                     <th>LastName</th>
+                     <th>Age</th>
+                     <th>Gender</th>
+                     <th>Docs</th>
+                     <th>Parents</th>
+                   </tr>
+                 </thead>
+                 <tbody id="res">
+
+
+                 </tbody>
+               </table>
+             </div>
+           </div>
+         </div>
+       </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script src="test/faker.js" charset="utf-8"></script>
+<script src="node_modules/pouchdb/dist/pouchdb.min.js"></script>
 
 <script type="text/javascript">
 
@@ -53,6 +134,35 @@ db.put(myDoc,function(){
 }
 
 
+
+function init(){
+  var n1 = performance.now()
+  db.allDocs({
+  include_docs: true,
+  attachments: true
+}).then(function(doc){
+
+      let list = doc.rows;
+
+buildTable(list,function(){
+  console.log(performance.now() - n1)
+});
+  })
+}
+
+
+
+function buildTable(x,cb){
+  let tblc = '' ;
+  if (x && x.length) {
+    for (var i = 0; i < x.length; i++) {
+  tblc += '<tr><td>'+x[i].doc.firstName+'</td><td>'+x[i].doc.lastName+'</td><td>'+x[i].doc.age+'</td><td>'+(x[i].doc.male?'male':'female')+'</td><td>'+x[i].doc.credit+'</td><td>'+x[i].doc.parents.length+'</td></tr>';
+
+    }
+  }
+  document.getElementById('res').innerHTML = tblc;
+  if (cb) cb();
+}
 
 function getDoc(){
   db.query(function (doc, emit) {
